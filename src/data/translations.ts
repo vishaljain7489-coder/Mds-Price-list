@@ -6,6 +6,7 @@ export interface TranslationContent {
     powers: string;
     enhancements: string;
     portfolio: string;
+    priceLists: string;
     loginSignUp: string;
     adminLogin: string;
   };
@@ -109,9 +110,10 @@ export const TRANSLATIONS: Record<Language, TranslationContent> = {
   hi: {
     nav: {
       about: "हमारे बारे में",
-      powers: "हमारी पावर्स",
+      powers: "सेवाएं",
       enhancements: "शॉप के लिए क्या देंगे",
       portfolio: "पोर्टफोलियो",
+      priceLists: "प्राइस लिस्ट",
       loginSignUp: "लॉगिन व साइन अप",
       adminLogin: "एडमिन पोर्टल"
     },
@@ -278,9 +280,10 @@ export const TRANSLATIONS: Record<Language, TranslationContent> = {
   en: {
     nav: {
       about: "About Us",
-      powers: "Our Powers",
-      enhancements: "For Your Store",
+      powers: "Services",
+      enhancements: "Solutions",
       portfolio: "Portfolio",
+      priceLists: "Price Lists",
       loginSignUp: "Login & Sign Up",
       adminLogin: "Admin Portal"
     },

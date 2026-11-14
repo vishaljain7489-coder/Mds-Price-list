@@ -63,7 +63,7 @@ export const FrontPortfolioPage: React.FC<FrontPortfolioPageProps> = ({
           </a>
 
           {/* Center Links */}
-          <nav className="hidden md:flex items-center gap-7 text-xs sm:text-sm font-semibold text-gray-600">
+          <nav className="hidden md:flex items-center gap-6 text-xs sm:text-sm font-semibold text-gray-600">
             <button onClick={() => scrollTo('services')} className="hover:text-[#E84025] transition-colors cursor-pointer">
               {t.nav.powers}
             </button>
@@ -75,6 +75,9 @@ export const FrontPortfolioPage: React.FC<FrontPortfolioPageProps> = ({
             </button>
             <button onClick={() => scrollTo('portfolio')} className="hover:text-[#E84025] transition-colors cursor-pointer">
               {t.nav.portfolio}
+            </button>
+            <button onClick={() => scrollTo('pricing')} className="px-3.5 py-1.5 rounded-full bg-orange-50 hover:bg-orange-100 text-[#E84025] border border-orange-200/80 transition-all cursor-pointer font-bold flex items-center gap-1.5 shadow-sm">
+              <span>{lang === 'hi' ? 'पोर्टफोलियो - प्राइस लिस्ट' : 'Portfolio - Price Lists'}</span>
             </button>
           </nav>
 
@@ -570,6 +573,186 @@ export const FrontPortfolioPage: React.FC<FrontPortfolioPageProps> = ({
       </section>
 
       {/* ======================================================== */}
+      {/* 6.5. "PORTFOLIO - PRICE LISTS" (Transparent 3-Tier Grid) */}
+      {/* ======================================================== */}
+      <section id="pricing" className="py-10 sm:py-14 px-4 sm:px-8 max-w-7xl mx-auto text-center overflow-hidden">
+        <div className="max-w-2xl mx-auto mb-8">
+          <span className="text-[11px] font-bold uppercase tracking-widest text-[#E84025] block mb-1">
+            • {lang === 'hi' ? 'पारदर्शी एजेंसी पैकेज' : 'TRANSPARENT AGENCY PACKAGES'}
+          </span>
+          <h2 className="font-heading-modern text-2xl sm:text-4xl font-extrabold text-[#191C21]">
+            Portfolio <span className="text-[#E84025]">- Price Lists</span>
+          </h2>
+          <p className="text-xs sm:text-sm text-gray-500 mt-1">
+            {lang === 'hi' 
+              ? 'कैफ़े, रेस्टोरेंट्स और क्लॉथ स्टोर्स के लिए डायरेक्ट व्हाट्सएप इन्क्वायरी लाने वाले पैकेजेस' 
+              : 'Complete transparent packages for Cafés & Clothing Stores with guaranteed local WhatsApp inquiries'}
+          </p>
+        </div>
+
+        {/* 3 Packages Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left items-stretch">
+          
+          {/* Plan 1: Starter */}
+          <div className="p-6 rounded-3xl bg-white border border-gray-100 shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-lg transition-all flex flex-col justify-between">
+            <div className="space-y-4">
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400 block mb-1">
+                  Starter Plan
+                </span>
+                <h3 className="font-heading-modern text-xl font-bold text-[#191C21]">
+                  5 Reels Ad Campaign
+                </h3>
+                <p className="text-xs text-gray-500 mt-1">
+                  Test viral 3-second reels and hyper-local Meta ads in your area
+                </p>
+              </div>
+
+              <div className="pt-2">
+                <span className="font-heading-modern text-4xl font-black text-[#191C21]">₹3,000</span>
+                <span className="text-xs text-gray-400 font-medium"> / campaign</span>
+              </div>
+
+              <ul className="space-y-2.5 pt-4 border-t border-gray-100 text-xs text-gray-600">
+                <li className="flex items-center gap-2">
+                  <Check className="w-4 h-4 text-[#E84025] shrink-0" />
+                  <span><strong>5 Viral 9:16 Reels</strong> (Food / Fashion / Retail)</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <Check className="w-4 h-4 text-[#E84025] shrink-0" />
+                  <span><strong>5km Radius Meta Ads</strong> Geofencing</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <Check className="w-4 h-4 text-[#E84025] shrink-0" />
+                  <span>Direct WhatsApp Lead Tracking</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <Check className="w-4 h-4 text-[#E84025] shrink-0" />
+                  <span>Deliverables Tracker in Client Portal</span>
+                </li>
+              </ul>
+            </div>
+
+            <button
+              onClick={onOpenPortal}
+              className="mt-6 w-full py-3 rounded-full bg-gray-100 hover:bg-orange-50 text-gray-800 hover:text-[#E84025] text-xs font-bold uppercase tracking-wider transition-all cursor-pointer border border-gray-200"
+            >
+              Select Starter Plan →
+            </button>
+          </div>
+
+          {/* Plan 2: 15 Reels Signature (Featured) */}
+          <div className="p-6 rounded-3xl bg-white border-2 border-[#E84025] shadow-[0_15px_40px_rgba(232,64,37,0.12)] transition-all flex flex-col justify-between relative scale-100 md:scale-105">
+            <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-gradient-to-r from-[#E84025] to-[#FF5B26] text-white text-[10px] font-extrabold uppercase tracking-widest shadow-md">
+              ⭐ Most Popular
+            </span>
+
+            <div className="space-y-4">
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[#E84025] block mb-1">
+                  Signature Growth
+                </span>
+                <h3 className="font-heading-modern text-xl font-bold text-[#191C21]">
+                  15 Reels Signature Growth
+                </h3>
+                <p className="text-xs text-gray-500 mt-1">
+                  Our flagship package that scales daily store walk-ins and weekend table bookings
+                </p>
+              </div>
+
+              <div className="pt-2">
+                <span className="font-heading-modern text-4xl font-black text-[#E84025]">₹6,000</span>
+                <span className="text-xs text-gray-400 font-medium"> / campaign</span>
+              </div>
+
+              <ul className="space-y-2.5 pt-4 border-t border-gray-100 text-xs text-gray-600">
+                <li className="flex items-center gap-2">
+                  <Check className="w-4 h-4 text-[#E84025] shrink-0" />
+                  <span><strong>15 Cinematic 3-Sec Hook Reels</strong></span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <Check className="w-4 h-4 text-[#E84025] shrink-0" />
+                  <span><strong>5-10km Hyper-Local Meta Ads</strong> Setup</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <Check className="w-4 h-4 text-[#E84025] shrink-0" />
+                  <span><strong>Direct WhatsApp Customer Inquiries</strong></span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <Check className="w-4 h-4 text-[#E84025] shrink-0" />
+                  <span>Weekly Telemetry & Video Progress Tracking</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <Check className="w-4 h-4 text-[#E84025] shrink-0" />
+                  <span>Transparent Ad Spend Billing (Zero markup)</span>
+                </li>
+              </ul>
+            </div>
+
+            <button
+              onClick={onOpenPortal}
+              className="mt-6 w-full py-3.5 rounded-full bg-gradient-to-r from-[#E84025] to-[#FF5B26] hover:from-[#d3361d] hover:to-[#eb4c1a] text-white text-xs font-bold uppercase tracking-wider shadow-[0_6px_20px_rgba(232,64,37,0.3)] transition-all cursor-pointer hover:scale-105"
+            >
+              Choose 15 Reels Plan →
+            </button>
+          </div>
+
+          {/* Plan 3: Full Power Combo */}
+          <div className="p-6 rounded-3xl bg-white border border-gray-100 shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-lg transition-all flex flex-col justify-between">
+            <div className="space-y-4">
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400 block mb-1">
+                  Full Power Combo
+                </span>
+                <h3 className="font-heading-modern text-xl font-bold text-[#191C21]">
+                  15 Reels + 15 Posts Combo
+                </h3>
+                <p className="text-xs text-gray-500 mt-1">
+                  Full branding domination with viral video reels plus high-converting offer banners
+                </p>
+              </div>
+
+              <div className="pt-2">
+                <span className="font-heading-modern text-4xl font-black text-[#191C21]">₹12,000</span>
+                <span className="text-xs text-gray-400 font-medium"> / campaign</span>
+              </div>
+
+              <ul className="space-y-2.5 pt-4 border-t border-gray-100 text-xs text-gray-600">
+                <li className="flex items-center gap-2">
+                  <Check className="w-4 h-4 text-[#E84025] shrink-0" />
+                  <span><strong>15 Viral Video Reels</strong> (4K Quality)</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <Check className="w-4 h-4 text-[#E84025] shrink-0" />
+                  <span><strong>15 Creative Posts & Offer Carousels</strong></span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <Check className="w-4 h-4 text-[#E84025] shrink-0" />
+                  <span>High-Spender Custom Retargeting Funnel</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <Check className="w-4 h-4 text-[#E84025] shrink-0" />
+                  <span>Meta Pixel, CAPI & Catalog Integration</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <Check className="w-4 h-4 text-[#E84025] shrink-0" />
+                  <span>Dedicated Creative Campaign Director</span>
+                </li>
+              </ul>
+            </div>
+
+            <button
+              onClick={onOpenPortal}
+              className="mt-6 w-full py-3 rounded-full bg-gray-100 hover:bg-orange-50 text-gray-800 hover:text-[#E84025] text-xs font-bold uppercase tracking-wider transition-all cursor-pointer border border-gray-200"
+            >
+              Select Combo Plan →
+            </button>
+          </div>
+
+        </div>
+      </section>
+
+      {/* ======================================================== */}
       {/* 7. "READY TO GET STARTED?" (Compact Orange CTA Banner)  */}
       {/* ======================================================== */}
       <section className="py-8 sm:py-10 px-4 sm:px-8 max-w-7xl mx-auto overflow-hidden">
@@ -613,6 +796,7 @@ export const FrontPortfolioPage: React.FC<FrontPortfolioPageProps> = ({
               <li><button onClick={() => scrollTo('services')} className="hover:text-[#E84025]">Services</button></li>
               <li><button onClick={() => scrollTo('process')} className="hover:text-[#E84025]">Solutions</button></li>
               <li><button onClick={() => scrollTo('agency')} className="hover:text-[#E84025]">About Us</button></li>
+              <li><button onClick={() => scrollTo('pricing')} className="text-[#E84025] font-bold">Portfolio - Price Lists</button></li>
             </ul>
           </div>
 
