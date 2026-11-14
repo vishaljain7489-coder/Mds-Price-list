@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { FrontPortfolioPage } from './components/pages/FrontPortfolioPage';
 import { CustomerPortal } from './components/portal/CustomerPortal';
 import { AdminPortal } from './components/portal/AdminPortal';
-import { LogoVideoSplash } from './components/common/LogoVideoSplash';
+import { LightBeamSplash } from './components/common/LightBeamSplash';
 
 // ErrorBoundary to completely prevent any white/black screen crashes
 class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { hasError: boolean }> {
@@ -58,9 +58,9 @@ export const App: React.FC = () => {
     <ErrorBoundary>
       <div className="bg-white min-h-screen text-[#191C21] w-full max-w-full overflow-x-hidden">
         
-        {/* 1. Custom Video Logo Splash Animation */}
+        {/* 1. Cinematic Light Beam -> Logo Absorption Intro Animation */}
         {showIntro && (
-          <LogoVideoSplash onComplete={() => setShowIntro(false)} />
+          <LightBeamSplash onComplete={() => setShowIntro(false)} />
         )}
 
         {/* 2. Dynamic View Rendering */}
