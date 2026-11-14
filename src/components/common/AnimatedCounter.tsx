@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 interface AnimatedCounterProps {
   target: number;
@@ -6,6 +6,7 @@ interface AnimatedCounterProps {
   prefix?: string;
   decimals?: number;
   duration?: number;
+  delay?: number;
   className?: string;
 }
 
@@ -14,41 +15,74 @@ export const AnimatedCounter: React.FC<AnimatedCounterProps> = ({
   suffix = '',
   prefix = '',
   decimals = 0,
-  duration = 1800,
+  duration = 2200,
+  delay = 300,
   className = ''
 }) => {
   const [count, setCount] = useState(0);
+  const [hasStarted, setHasStarted] = useState(false);
+  const elementRef = useRef<HTMLSpanElement>(null);
 
+  // IntersectionObserver: Only start when visible on user's screen
   useEffect(() => {
+    const el = elementRef.current;
+    if (!el) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          setHasStarted(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  // Animation loop
+  useEffect(() => {
+    if (!hasStarted) return;
+
     let startTime: number | null = null;
     let animationFrameId: number;
 
-    const animate = (timestamp: number) => {
-      if (!startTime) startTime = timestamp;
-      const progress = Math.min((timestamp - startTime) / duration, 1);
-      
-      // Smooth cubic-out easing curve
-      const easedProgress = 1 - Math.pow(1 - progress, 3);
-      const currentVal = easedProgress * target;
+    const timeout = setTimeout(() => {
+      const animate = (timestamp: number) => {
+        if (!startTime) startTime = timestamp;
+        const elapsed = timestamp - startTime;
+        const progress = Math.min(elapsed / duration, 1);
 
-      setCount(currentVal);
+        // Smooth cubic-bezier out easing: fast start, decelerating to a gentle halt
+        const eased = 1 - Math.pow(1 - progress, 3);
+        const currentVal = eased * target;
 
-      if (progress < 1) {
-        animationFrameId = requestAnimationFrame(animate);
-      }
+        setCount(currentVal);
+
+        if (progress < 1) {
+          animationFrameId = requestAnimationFrame(animate);
+        } else {
+          setCount(target);
+        }
+      };
+
+      animationFrameId = requestAnimationFrame(animate);
+    }, delay);
+
+    return () => {
+      clearTimeout(timeout);
+      if (animationFrameId) cancelAnimationFrame(animationFrameId);
     };
-
-    animationFrameId = requestAnimationFrame(animate);
-
-    return () => cancelAnimationFrame(animationFrameId);
-  }, [target, duration]);
+  }, [hasStarted, target, duration, delay]);
 
   const formatted = decimals > 0 
     ? count.toFixed(decimals) 
     : Math.floor(count).toString();
 
   return (
-    <span className={className}>
+    <span ref={elementRef} className={className}>
       {prefix}{formatted}{suffix}
     </span>
   );

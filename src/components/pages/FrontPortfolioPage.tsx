@@ -18,7 +18,8 @@ export const FrontPortfolioPage: React.FC<FrontPortfolioPageProps> = ({
   onOpenPortal,
   onOpenAdmin
 }) => {
-  const [lang, setLang] = useState<Language>('hi');
+  // Default to English as requested
+  const [lang, setLang] = useState<Language>('en');
   const t = TRANSLATIONS[lang];
 
   // Active Portfolio Filter: 'all' | 'cafes' | 'clothing'
@@ -91,14 +92,14 @@ export const FrontPortfolioPage: React.FC<FrontPortfolioPageProps> = ({
           {/* Right Header Actions: Language Switch + Login/Sign Up */}
           <div className="flex items-center gap-3">
             
-            {/* 🌐 1-Click Hindi/English Switch Pill */}
+            {/* 🌐 1-Click Language Switch Button */}
             <button
               onClick={toggleLanguage}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/15 text-xs font-mono font-bold text-white transition-all cursor-pointer shadow-sm"
-              title="Switch Language / भाषा बदलें"
+              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/15 text-xs font-mono font-bold text-white transition-all cursor-pointer shadow-sm hover:border-[#C8102E]/60"
+              title={lang === 'en' ? 'हिन्दी में बदलें' : 'Switch to English'}
             >
               <Globe className="w-3.5 h-3.5 text-[#C8102E]" />
-              <span className="uppercase">{lang === 'hi' ? 'EN' : 'हिन्दी'}</span>
+              <span>{lang === 'en' ? 'हिन्दी' : 'English'}</span>
             </button>
 
             {/* Login & Sign Up CTA */}
@@ -142,10 +143,10 @@ export const FrontPortfolioPage: React.FC<FrontPortfolioPageProps> = ({
         {/* 4 Animated Counter Metric Cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full max-w-4xl mb-12">
           
-          {/* Metric 1: 250+ Campaigns (Counts 1 to 250+) */}
+          {/* Metric 1: 250+ Campaigns (Visibly counts 0 to 250+) */}
           <div className="p-5 rounded-2xl bg-[#171919] border border-white/10 text-left shadow-lg group hover:border-[#C8102E]/50 transition-all hover:-translate-y-1">
             <span className="font-display text-3xl sm:text-4xl font-black text-[#C8102E] block">
-              <AnimatedCounter target={250} suffix="+" duration={1600} />
+              <AnimatedCounter target={250} suffix="+" duration={1800} delay={1800} />
             </span>
             <span className="text-xs font-bold text-white block mt-1">{t.stats.campaigns.label}</span>
             <span className="text-[11px] font-mono text-[#CCC5C4] mt-1 block leading-tight">{t.stats.campaigns.desc}</span>
@@ -154,7 +155,7 @@ export const FrontPortfolioPage: React.FC<FrontPortfolioPageProps> = ({
           {/* Metric 2: 2-3 Years Experience */}
           <div className="p-5 rounded-2xl bg-[#171919] border border-white/10 text-left shadow-lg group hover:border-[#C8102E]/50 transition-all hover:-translate-y-1">
             <span className="font-display text-3xl sm:text-4xl font-black text-white block">
-              <AnimatedCounter target={3} suffix=" Years" prefix="2-" duration={1200} />
+              <AnimatedCounter target={3} suffix=" Years" prefix="2-" duration={1400} delay={1900} />
             </span>
             <span className="text-xs font-bold text-white block mt-1">{t.stats.experience.label}</span>
             <span className="text-[11px] font-mono text-[#CCC5C4] mt-1 block leading-tight">{t.stats.experience.desc}</span>
@@ -163,7 +164,7 @@ export const FrontPortfolioPage: React.FC<FrontPortfolioPageProps> = ({
           {/* Metric 3: 1.2M+ Reach */}
           <div className="p-5 rounded-2xl bg-[#171919] border border-white/10 text-left shadow-lg group hover:border-[#C8102E]/50 transition-all hover:-translate-y-1">
             <span className="font-display text-3xl sm:text-4xl font-black text-[#C8102E] block">
-              <AnimatedCounter target={1.2} suffix="M+" decimals={1} duration={1500} />
+              <AnimatedCounter target={1.2} suffix="M+" decimals={1} duration={1600} delay={2000} />
             </span>
             <span className="text-xs font-bold text-white block mt-1">{t.stats.reach.label}</span>
             <span className="text-[11px] font-mono text-[#CCC5C4] mt-1 block leading-tight">{t.stats.reach.desc}</span>
@@ -172,7 +173,7 @@ export const FrontPortfolioPage: React.FC<FrontPortfolioPageProps> = ({
           {/* Metric 4: 4.9★ Rating */}
           <div className="p-5 rounded-2xl bg-[#171919] border border-white/10 text-left shadow-lg group hover:border-[#C8102E]/50 transition-all hover:-translate-y-1">
             <span className="font-display text-3xl sm:text-4xl font-black text-amber-400 block">
-              <AnimatedCounter target={4.9} suffix="★" decimals={1} duration={1400} />
+              <AnimatedCounter target={4.9} suffix="★" decimals={1} duration={1500} delay={2100} />
             </span>
             <span className="text-xs font-bold text-white block mt-1">{t.stats.rating.label}</span>
             <span className="text-[11px] font-mono text-[#CCC5C4] mt-1 block leading-tight">{t.stats.rating.desc}</span>

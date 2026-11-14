@@ -10,16 +10,28 @@
   body {
     background-color: #0A0A0A;
     color: #FFFFFF;
-    font-family: 'Space Grotesk', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-family: 'Outfit', 'Space Grotesk', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     overflow-x: hidden;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Bebas Neue', Impact, 'Space Grotesk', sans-serif;
+    font-family: 'Bebas Neue', 'Outfit', Impact, sans-serif;
     text-transform: uppercase;
     letter-spacing: 0.02em;
     line-height: 0.95;
   }
+}
+
+.font-display {
+  font-family: 'Bebas Neue', Impact, sans-serif;
+}
+
+.font-sans-clean {
+  font-family: 'Outfit', 'Inter', sans-serif;
+}
+
+.font-heading-modern {
+  font-family: 'Outfit', 'Syne', sans-serif;
 }
 
 /* Lenis Smooth Scroll Recommended Styles */
