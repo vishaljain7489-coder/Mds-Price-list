@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { FrontPortfolioPage } from './components/pages/FrontPortfolioPage';
 import { CustomerPortal } from './components/portal/CustomerPortal';
-import { IntroSplash } from './components/common/IntroSplash';
+import { AdminPortal } from './components/portal/AdminPortal';
+import { LightBeamSplash } from './components/common/LightBeamSplash';
 
-// Simple ErrorBoundary Component to prevent any black screen bugs
+// ErrorBoundary to completely prevent any white/black screen crashes
 class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { hasError: boolean }> {
   constructor(props: { children: React.ReactNode }) {
     super(props);
@@ -47,29 +48,39 @@ class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { has
 }
 
 export const App: React.FC = () => {
-  // Intro Splash state (plays on initial visit / refresh for ~1.6s)
+  // Light Beam Entrance Intro animation (runs once on page visit / refresh ~1.8s)
   const [showIntro, setShowIntro] = useState(true);
 
-  // Navigation view: 'front' (Public Portfolio & About) | 'portal' (Customer Portal)
-  const [currentView, setCurrentView] = useState<'front' | 'portal'>('front');
+  // Current View: 'front' (Public Portfolio) | 'portal' (Customer Portal) | 'admin' (Admin Console)
+  const [currentView, setCurrentView] = useState<'front' | 'portal' | 'admin'>('front');
 
   return (
     <ErrorBoundary>
       <div className="bg-[#0A0A0A] min-h-screen text-white">
         
-        {/* First-Visit Intro Entrance Animation */}
+        {/* 1. Cinematic Light Beam -> Logo Absorption Intro Animation */}
         {showIntro && (
-          <IntroSplash onComplete={() => setShowIntro(false)} />
+          <LightBeamSplash onComplete={() => setShowIntro(false)} />
         )}
 
-        {/* Dynamic View */}
-        {currentView === 'portal' ? (
+        {/* 2. Dynamic View Rendering */}
+        {currentView === 'portal' && (
           <CustomerPortal
             onBackToHome={() => setCurrentView('front')}
+            onOpenAdmin={() => setCurrentView('admin')}
           />
-        ) : (
+        )}
+
+        {currentView === 'admin' && (
+          <AdminPortal
+            onBackToHome={() => setCurrentView('front')}
+          />
+        )}
+
+        {currentView === 'front' && (
           <FrontPortfolioPage
             onOpenPortal={() => setCurrentView('portal')}
+            onOpenAdmin={() => setCurrentView('admin')}
           />
         )}
 
