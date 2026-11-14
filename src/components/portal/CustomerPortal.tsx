@@ -5,7 +5,10 @@ import {
   Phone, LogOut, ArrowRight, Sparkles, User, AlertCircle,
   Package, Layers, FileText, Info, HelpCircle
 } from 'lucide-react';
-import { ClientAccount, authenticateClient, registerClient, getClients } from '../../data/clientStore';
+import { 
+  ClientAccount, authenticateClient, registerClient, getClients, 
+  isAdminUser, ADMIN_CREDENTIALS 
+} from '../../data/clientStore';
 
 interface CustomerPortalProps {
   onBackToHome?: () => void;
@@ -14,6 +17,7 @@ interface CustomerPortalProps {
 
 export const CustomerPortal: React.FC<CustomerPortalProps> = ({ onBackToHome, onOpenAdmin }) => {
   const [currentUser, setCurrentUser] = useState<ClientAccount | null>(null);
+  const [isAdminSession, setIsAdminSession] = useState(false);
   
   // Auth Mode: 'login' | 'signup'
   const [authMode, setAuthMode] = useState<'login' | 'signup'>('login');
@@ -44,18 +48,61 @@ export const CustomerPortal: React.FC<CustomerPortalProps> = ({ onBackToHome, on
     e.preventDefault();
     setErrorMsg('');
     if (!emailOrId.trim() || !password.trim()) {
-      setErrorMsg('कृपया अपनी ईमेल आईडी या क्लाइंट आईडी और पासवर्ड दर्ज करें।');
+      setErrorMsg('कृपया अपनी ईमेल आईडी और पासवर्ड दर्ज करें।');
       return;
     }
 
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
+
+      // 1. Check if Master Admin Login (vishaljain74899@gmail.com / 7489640013)
+      if (isAdminUser(emailOrId, password)) {
+        const adminAccount: ClientAccount = {
+          id: "ADMIN-01",
+          name: "Vishal Jain (Master Admin)",
+          businessName: "RONIN MEDIA Agency Operations",
+          category: "Performance Marketing & Media",
+          phone: "+91 74896 40013",
+          email: ADMIN_CREDENTIALS.email,
+          city: "Jaipur, Rajasthan",
+          packageSubscribed: "Master Admin Access",
+          totalBilled: 0,
+          amountPaid: 0,
+          amountDue: 0,
+          paymentStatus: 'Paid',
+          paymentMode: 'UPI',
+          isVip: true,
+          clientTemperament: "Agency Founder & Master Administrator",
+          reelsDelivered: 15,
+          reelsTotal: 15,
+          adsActive: 10,
+          adsPending: 0,
+          metaBudgetSpent: 6000,
+          metaBudgetTotal: 6000,
+          serviceStatus: 'Active & Optimizing',
+          notes: "Master Admin Logged in. Use the extra 'Open Admin Control Panel' button to edit website text & client packages.",
+          createdDate: "Founder",
+          passwordHash: ADMIN_CREDENTIALS.password,
+          assignedManager: {
+            name: "Vishal Jain (Owner)",
+            phone: "+91 74896 40013",
+            whatsapp: "917489640013"
+          },
+          deliveredReelsList: []
+        };
+        setCurrentUser(adminAccount);
+        setIsAdminSession(true);
+        return;
+      }
+
+      // 2. Check Customer Credentials (e.g. vishaljain@gmail.com / 7489640013)
       const user = authenticateClient(emailOrId, password);
       if (user) {
         setCurrentUser(user);
+        setIsAdminSession(false);
       } else {
-        setErrorMsg('गलत ईमेल/क्लाइंट आईडी या पासवर्ड। कृपया पुनः प्रयास करें।');
+        setErrorMsg('गलत ईमेल आईडी या पासवर्ड। कृपया पुनः प्रयास करें।');
       }
     }, 400);
   };
@@ -83,22 +130,64 @@ export const CustomerPortal: React.FC<CustomerPortalProps> = ({ onBackToHome, on
       });
 
       setCurrentUser(newAccount);
+      setIsAdminSession(false);
       setSuccessMsg('आपका खाता सफलतापूर्वक बन गया है!');
     }, 400);
   };
 
-  const handleQuickLogin = (demoEmail: string, demoPass: string) => {
+  const handleQuickLogin = (demoEmail: string, demoPass: string, isAdm: boolean = false) => {
     setEmailOrId(demoEmail);
     setPassword(demoPass);
     setErrorMsg('');
-    const user = authenticateClient(demoEmail, demoPass);
-    if (user) {
-      setCurrentUser(user);
+
+    if (isAdm || isAdminUser(demoEmail, demoPass)) {
+      const adminAccount: ClientAccount = {
+        id: "ADMIN-01",
+        name: "Vishal Jain (Master Admin)",
+        businessName: "RONIN MEDIA Agency Operations",
+        category: "Performance Marketing & Media",
+        phone: "+91 74896 40013",
+        email: ADMIN_CREDENTIALS.email,
+        city: "Jaipur, Rajasthan",
+        packageSubscribed: "Master Admin Access",
+        totalBilled: 0,
+        amountPaid: 0,
+        amountDue: 0,
+        paymentStatus: 'Paid',
+        paymentMode: 'UPI',
+        isVip: true,
+        clientTemperament: "Agency Founder & Master Administrator",
+        reelsDelivered: 15,
+        reelsTotal: 15,
+        adsActive: 10,
+        adsPending: 0,
+        metaBudgetSpent: 6000,
+        metaBudgetTotal: 6000,
+        serviceStatus: 'Active & Optimizing',
+        notes: "Master Admin Logged in. Use the extra 'Open Admin Control Panel' button to edit website text & client packages.",
+        createdDate: "Founder",
+        passwordHash: ADMIN_CREDENTIALS.password,
+        assignedManager: {
+          name: "Vishal Jain (Owner)",
+          phone: "+91 74896 40013",
+          whatsapp: "917489640013"
+        },
+        deliveredReelsList: []
+      };
+      setCurrentUser(adminAccount);
+      setIsAdminSession(true);
+    } else {
+      const user = authenticateClient(demoEmail, demoPass);
+      if (user) {
+        setCurrentUser(user);
+        setIsAdminSession(false);
+      }
     }
   };
 
   const handleLogout = () => {
     setCurrentUser(null);
+    setIsAdminSession(false);
     setEmailOrId('');
     setPassword('');
     setErrorMsg('');
@@ -126,7 +215,7 @@ export const CustomerPortal: React.FC<CustomerPortalProps> = ({ onBackToHome, on
               RONIN MEDIA
             </span>
             <span className="hidden sm:inline-block px-2.5 py-0.5 rounded-full bg-white/10 text-[10px] font-mono uppercase tracking-widest text-[#CCC5C4]">
-              Client Portal
+              Unified Portal Login
             </span>
           </div>
 
@@ -136,7 +225,7 @@ export const CustomerPortal: React.FC<CustomerPortalProps> = ({ onBackToHome, on
                 onClick={onBackToHome}
                 className="text-xs font-mono text-[#CCC5C4] hover:text-white px-4 py-2 rounded-xl border border-white/10 hover:border-white/30 transition-all cursor-pointer bg-white/5"
               >
-                ← Back to Portfolio
+                ← Back to Home
               </button>
             )}
           </div>
@@ -161,7 +250,7 @@ export const CustomerPortal: React.FC<CustomerPortalProps> = ({ onBackToHome, on
                     : 'text-[#CCC5C4] hover:text-white'
                 }`}
               >
-                1. Existing Client Login
+                1. Sign In / Login
               </button>
 
               <button
@@ -173,7 +262,7 @@ export const CustomerPortal: React.FC<CustomerPortalProps> = ({ onBackToHome, on
                     : 'text-[#CCC5C4] hover:text-white'
                 }`}
               >
-                2. Create New Account
+                2. Create Account
               </button>
             </div>
 
@@ -189,20 +278,21 @@ export const CustomerPortal: React.FC<CustomerPortalProps> = ({ onBackToHome, on
               <form onSubmit={handleLogin} className="space-y-4">
                 <div className="text-center mb-6">
                   <h2 className="font-display text-3xl uppercase tracking-wider text-white">
-                    Client Portal Access
+                    Sign In to Portal
                   </h2>
                   <p className="text-xs font-mono text-[#CCC5C4] mt-1">
-                    Enter your registered credentials to view your active plan and deliverables
+                    Enter your email & password to access your dashboard
                   </p>
                 </div>
 
                 <div>
                   <label className="block text-xs font-mono uppercase tracking-widest text-[#CCC5C4] mb-2 font-bold">
-                    Email ID or Client ID
+                    Email ID
                   </label>
                   <input
-                    type="text"
-                    placeholder="e.g. rohit@royalheritage.com or CLI-101"
+                    type="email"
+                    required
+                    placeholder="Enter email (e.g. vishaljain@gmail.com)"
                     value={emailOrId}
                     onChange={(e) => setEmailOrId(e.target.value)}
                     className="w-full bg-[#0A0A0A] border border-white/15 rounded-xl px-4 py-3 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#C8102E] transition-colors font-mono"
@@ -216,7 +306,8 @@ export const CustomerPortal: React.FC<CustomerPortalProps> = ({ onBackToHome, on
                   <div className="relative">
                     <input
                       type={showPassword ? 'text' : 'password'}
-                      placeholder="Enter your secret password"
+                      required
+                      placeholder="Enter password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       className="w-full bg-[#0A0A0A] border border-white/15 rounded-xl px-4 py-3 pr-11 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#C8102E] transition-colors font-mono"
@@ -236,46 +327,56 @@ export const CustomerPortal: React.FC<CustomerPortalProps> = ({ onBackToHome, on
                   disabled={loading}
                   className="w-full py-3.5 rounded-xl bg-[#C8102E] hover:bg-[#a50b24] text-white font-mono text-xs font-bold uppercase tracking-widest shadow-[0_0_25px_rgba(200,16,46,0.5)] transition-all cursor-pointer flex items-center justify-center gap-2 mt-6 hover:scale-[1.02]"
                 >
-                  {loading ? 'Verifying Credentials...' : 'Sign In & View My Plan →'}
+                  {loading ? 'Verifying Credentials...' : 'Sign In & Access Dashboard →'}
                 </button>
 
-                {/* Instant 1-Click Demo Logins */}
+                {/* Instant 1-Click Requested Accounts */}
                 <div className="mt-8 pt-6 border-t border-white/10">
                   <p className="text-[11px] font-mono uppercase tracking-wider text-white/50 mb-3 text-center">
-                    Instant 1-Click Demo Client Accounts:
+                    Instant 1-Click Access (User Requested):
                   </p>
-                  <div className="space-y-2">
+                  <div className="space-y-2.5">
+                    
+                    {/* Customer Demo Account */}
                     <button
                       type="button"
-                      onClick={() => handleQuickLogin('rohit@royalheritage.com', 'client123')}
-                      className="w-full p-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-between text-left text-xs transition-colors cursor-pointer group"
+                      onClick={() => handleQuickLogin('vishaljain@gmail.com', '7489640013', false)}
+                      className="w-full p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-between text-left text-xs transition-colors cursor-pointer group"
                     >
                       <div>
-                        <span className="font-bold text-white group-hover:text-[#C8102E] transition-colors">
-                          Rohit Verma (Active ₹6,000 Plan)
-                        </span>
-                        <span className="text-[#CCC5C4] text-[11px] block font-mono">
-                          Royal Heritage Café · 8/15 Reels Delivered
+                        <div className="flex items-center gap-1.5">
+                          <User className="w-3.5 h-3.5 text-cyan-400" />
+                          <span className="font-bold text-white group-hover:text-[#C8102E] transition-colors">
+                            Customer Demo (vishaljain@gmail.com)
+                          </span>
+                        </div>
+                        <span className="text-[#CCC5C4] text-[11px] block font-mono mt-0.5">
+                          Pass: 7489640013 · Active ₹6,000 Plan & 8/15 Reels
                         </span>
                       </div>
-                      <span className="text-[10px] font-mono text-[#C8102E] font-bold">1-Click Login →</span>
+                      <span className="text-[10px] font-mono text-cyan-400 font-bold bg-cyan-950/60 px-2 py-1 rounded">1-Click →</span>
                     </button>
 
+                    {/* Master Admin Account */}
                     <button
                       type="button"
-                      onClick={() => handleQuickLogin('vikram@apexmotors.in', 'client123')}
-                      className="w-full p-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-between text-left text-xs transition-colors cursor-pointer group"
+                      onClick={() => handleQuickLogin('vishaljain74899@gmail.com', '7489640013', true)}
+                      className="w-full p-3 rounded-xl bg-gradient-to-r from-amber-950/40 via-red-950/30 to-amber-950/40 hover:bg-white/10 border border-amber-500/40 flex items-center justify-between text-left text-xs transition-colors cursor-pointer group"
                     >
                       <div>
-                        <span className="font-bold text-white group-hover:text-[#C8102E] transition-colors">
-                          Vikram Singhania (Active ₹12,000 Combo)
-                        </span>
-                        <span className="text-[#CCC5C4] text-[11px] block font-mono">
-                          Apex Motors · 12/15 Reels Delivered
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-amber-400">👑</span>
+                          <span className="font-bold text-amber-300 group-hover:text-amber-200 transition-colors">
+                            Master Admin (vishaljain74899@gmail.com)
+                          </span>
+                        </div>
+                        <span className="text-amber-200/70 text-[11px] block font-mono mt-0.5">
+                          Pass: 7489640013 · Unlocks Extra Admin Panel Control Button
                         </span>
                       </div>
-                      <span className="text-[10px] font-mono text-[#C8102E] font-bold">1-Click Login →</span>
+                      <span className="text-[10px] font-mono text-amber-300 font-bold bg-amber-900/60 px-2 py-1 rounded">Admin →</span>
                     </button>
+
                   </div>
                 </div>
 
@@ -288,7 +389,7 @@ export const CustomerPortal: React.FC<CustomerPortalProps> = ({ onBackToHome, on
                     Create Client Account
                   </h2>
                   <p className="text-xs font-mono text-[#CCC5C4] mt-1">
-                    Register your business to access plans, deliverables & direct onboarding
+                    Register your business to book packages and track campaign deliverables
                   </p>
                 </div>
 
@@ -300,7 +401,7 @@ export const CustomerPortal: React.FC<CustomerPortalProps> = ({ onBackToHome, on
                     <input
                       type="text"
                       required
-                      placeholder="e.g. Amit Sharma"
+                      placeholder="e.g. Rahul Sharma"
                       value={signupName}
                       onChange={(e) => setSignupName(e.target.value)}
                       className="w-full bg-[#0A0A0A] border border-white/15 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#C8102E] font-mono"
@@ -309,12 +410,12 @@ export const CustomerPortal: React.FC<CustomerPortalProps> = ({ onBackToHome, on
 
                   <div>
                     <label className="block text-xs font-mono uppercase tracking-widest text-[#CCC5C4] mb-1 font-bold">
-                      Business / Shop Name *
+                      Store / Café Name *
                     </label>
                     <input
                       type="text"
                       required
-                      placeholder="e.g. Sharma Sweets / Glow Salon"
+                      placeholder="e.g. Royal Café / Trendz Store"
                       value={signupBusiness}
                       onChange={(e) => setSignupBusiness(e.target.value)}
                       className="w-full bg-[#0A0A0A] border border-white/15 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#C8102E] font-mono"
@@ -330,7 +431,7 @@ export const CustomerPortal: React.FC<CustomerPortalProps> = ({ onBackToHome, on
                     <input
                       type="email"
                       required
-                      placeholder="e.g. amit@sharmasweets.com"
+                      placeholder="e.g. contact@mybusiness.com"
                       value={signupEmail}
                       onChange={(e) => setSignupEmail(e.target.value)}
                       className="w-full bg-[#0A0A0A] border border-white/15 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#C8102E] font-mono"
@@ -355,11 +456,11 @@ export const CustomerPortal: React.FC<CustomerPortalProps> = ({ onBackToHome, on
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-mono uppercase tracking-widest text-[#CCC5C4] mb-1 font-bold">
-                      City & Area
+                      City & Market Area
                     </label>
                     <input
                       type="text"
-                      placeholder="e.g. Jaipur, Vaishali Nagar"
+                      placeholder="e.g. Jaipur, C-Scheme"
                       value={signupCity}
                       onChange={(e) => setSignupCity(e.target.value)}
                       className="w-full bg-[#0A0A0A] border border-white/15 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#C8102E] font-mono"
@@ -368,7 +469,7 @@ export const CustomerPortal: React.FC<CustomerPortalProps> = ({ onBackToHome, on
 
                   <div>
                     <label className="block text-xs font-mono uppercase tracking-widest text-[#CCC5C4] mb-1 font-bold">
-                      Business Category
+                      Category
                     </label>
                     <select
                       value={signupCategory}
@@ -376,11 +477,9 @@ export const CustomerPortal: React.FC<CustomerPortalProps> = ({ onBackToHome, on
                       className="w-full bg-[#0A0A0A] border border-white/15 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-[#C8102E] font-mono"
                     >
                       <option value="Café & Dining">Café & Dining</option>
-                      <option value="Automotive & Showroom">Automotive & Showroom</option>
-                      <option value="Salon & Beauty">Salon & Beauty</option>
-                      <option value="Gym & Fitness">Gym & Fitness</option>
-                      <option value="Fashion & Boutique">Fashion & Boutique</option>
-                      <option value="Real Estate & Property">Real Estate & Property</option>
+                      <option value="Clothing & Apparel">Clothing & Apparel</option>
+                      <option value="Bakery & Desserts">Bakery & Desserts</option>
+                      <option value="Fashion & Boutiques">Fashion & Boutiques</option>
                       <option value="Other Retail Store">Other Retail Store</option>
                     </select>
                   </div>
@@ -388,7 +487,7 @@ export const CustomerPortal: React.FC<CustomerPortalProps> = ({ onBackToHome, on
 
                 <div>
                   <label className="block text-xs font-mono uppercase tracking-widest text-[#CCC5C4] mb-1 font-bold">
-                    Create Portal Password *
+                    Create Password *
                   </label>
                   <input
                     type="password"
@@ -405,7 +504,7 @@ export const CustomerPortal: React.FC<CustomerPortalProps> = ({ onBackToHome, on
                   disabled={loading}
                   className="w-full py-3.5 rounded-xl bg-[#C8102E] hover:bg-[#a50b24] text-white font-mono text-xs font-bold uppercase tracking-widest shadow-[0_0_25px_rgba(200,16,46,0.5)] transition-all cursor-pointer flex items-center justify-center gap-2 mt-6 hover:scale-[1.02]"
                 >
-                  {loading ? 'Creating Your Account...' : 'Complete Sign Up & Open Workspace →'}
+                  {loading ? 'Registering Account...' : 'Sign Up & Open Dashboard →'}
                 </button>
               </form>
             )}
@@ -413,7 +512,7 @@ export const CustomerPortal: React.FC<CustomerPortalProps> = ({ onBackToHome, on
           </div>
 
           <p className="text-center text-xs font-mono text-white/40 mt-6">
-            Protected Client Workspace · Zero Data Leaks to Public Front
+            Secure Encryption · Client & Admin Authentication
           </p>
 
         </div>
@@ -428,7 +527,7 @@ export const CustomerPortal: React.FC<CustomerPortalProps> = ({ onBackToHome, on
   }
 
   // ========================================================
-  // VIEW 2: LOGGED-IN CUSTOMER WORKSPACE & FUNNELS
+  // VIEW 2: LOGGED-IN WORKSPACE & EXTRA ADMIN BUTTON
   // ========================================================
   const hasActivePlan = currentUser.totalBilled > 0 && currentUser.reelsTotal > 0;
   const progressPercent = hasActivePlan 
@@ -454,8 +553,12 @@ export const CustomerPortal: React.FC<CustomerPortalProps> = ({ onBackToHome, on
                 <span className="font-display text-xl uppercase font-bold text-white">
                   RONIN MEDIA
                 </span>
-                <span className="text-[10px] font-mono uppercase px-2.5 py-0.5 rounded-full bg-[#C8102E]/20 text-[#C8102E] border border-[#C8102E]/40 font-bold">
-                  Client Workspace
+                <span className={`text-[10px] font-mono uppercase px-2.5 py-0.5 rounded-full border font-bold ${
+                  isAdminSession 
+                    ? 'bg-amber-500/20 text-amber-300 border-amber-500/40' 
+                    : 'bg-[#C8102E]/20 text-[#C8102E] border-[#C8102E]/40'
+                }`}>
+                  {isAdminSession ? 'Master Admin' : 'Client Workspace'}
                 </span>
               </div>
               <p className="text-[11px] font-mono text-[#CCC5C4]">
@@ -465,12 +568,27 @@ export const CustomerPortal: React.FC<CustomerPortalProps> = ({ onBackToHome, on
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="hidden sm:flex flex-col text-right">
-              <span className="text-xs font-bold text-white">{currentUser.name}</span>
-              <span className="text-[10px] font-mono text-emerald-400">
-                ● Logged In ({currentUser.email})
-              </span>
-            </div>
+            
+            {/* ⚡ EXTRA ADMIN BUTTON (ONLY REVEALED WHEN vishaljain74899@gmail.com LOGS IN!) */}
+            {isAdminSession && onOpenAdmin && (
+              <button
+                onClick={onOpenAdmin}
+                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-[#C8102E] hover:from-amber-400 hover:to-red-600 text-white font-mono text-xs font-bold uppercase tracking-wider shadow-[0_0_20px_rgba(200,16,46,0.6)] hover:scale-105 transition-all cursor-pointer animate-pulse"
+                title="Launch Admin Control Console"
+              >
+                <ShieldCheck className="w-4 h-4" />
+                <span>Admin Panel ⚡</span>
+              </button>
+            )}
+
+            {onBackToHome && (
+              <button
+                onClick={onBackToHome}
+                className="hidden sm:inline-flex px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-mono text-[#CCC5C4] hover:text-white transition-colors cursor-pointer"
+              >
+                Website View
+              </button>
+            )}
 
             <button
               onClick={handleLogout}
@@ -485,13 +603,39 @@ export const CustomerPortal: React.FC<CustomerPortalProps> = ({ onBackToHome, on
       </header>
 
       {/* MAIN WORKSPACE BODY */}
-      <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-8 pt-6 space-y-8">
+      <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-8 pt-6 space-y-6">
         
-        {/* ======================================================== */}
-        {/* FUNNEL NAVIGATION TABS (At the top of workspace)         */}
-        {/* ======================================================== */}
+        {/* 👑 EXCLUSIVE MASTER ADMIN BANNER */}
+        {isAdminSession && onOpenAdmin && (
+          <div className="bg-gradient-to-r from-amber-950/80 via-[#1f1115] to-amber-950/80 border border-amber-500/40 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-[0_10px_35px_rgba(245,158,11,0.15)]">
+            <div className="flex items-center gap-3.5">
+              <div className="w-10 h-10 rounded-xl bg-amber-500 text-black flex items-center justify-center font-bold text-lg shrink-0 shadow-lg">
+                👑
+              </div>
+              <div>
+                <p className="text-sm font-bold text-white flex items-center gap-2">
+                  <span>Master Administrator Mode Unlocked!</span>
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-400 text-black font-bold uppercase">
+                    Admin Active
+                  </span>
+                </p>
+                <p className="text-xs text-amber-200/80 font-mono mt-0.5">
+                  Signed in as <strong>{ADMIN_CREDENTIALS.email}</strong> · You have full control to edit website copy, package pricing & all client delivery counts.
+                </p>
+              </div>
+            </div>
+
+            <button
+              onClick={onOpenAdmin}
+              className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-[#C8102E] hover:from-amber-400 hover:to-red-600 text-white font-mono text-xs font-bold uppercase tracking-wider shadow-lg hover:scale-105 transition-all cursor-pointer shrink-0"
+            >
+              Open Admin Console ⚡ →
+            </button>
+          </div>
+        )}
+
+        {/* FUNNEL NAVIGATION TABS */}
         <div className="flex flex-wrap items-center gap-2 sm:gap-3 p-1.5 rounded-2xl bg-[#171919] border border-white/10">
-          
           <button
             onClick={() => setActiveTab('plan')}
             className={`flex-1 sm:flex-none px-5 py-2.5 rounded-xl text-xs font-mono uppercase tracking-wider font-bold transition-all cursor-pointer flex items-center justify-center gap-2 ${
@@ -539,20 +683,14 @@ export const CustomerPortal: React.FC<CustomerPortalProps> = ({ onBackToHome, on
             <User className="w-4 h-4" />
             <span>Account Details</span>
           </button>
-
         </div>
 
-        {/* ======================================================== */}
-        {/* TAB 1: MY PURCHASED PLAN & DELIVERABLES                  */}
-        {/* ======================================================== */}
+        {/* TAB 1: MY PURCHASED PLAN & DELIVERABLES */}
         {activeTab === 'plan' && (
           <div className="space-y-8 animate-in fade-in duration-300">
-            
             {hasActivePlan ? (
               <>
-                {/* Active Plan Hero Card */}
                 <div className="relative rounded-3xl bg-gradient-to-br from-[#171919] via-[#1a1215] to-[#171919] border border-[#C8102E]/40 p-6 sm:p-10 shadow-[0_20px_60px_rgba(200,16,46,0.15)] overflow-hidden">
-                  
                   <div className="absolute top-0 right-0 w-80 h-80 bg-[#C8102E]/20 rounded-full blur-[90px] pointer-events-none" />
 
                   <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-8 border-b border-white/10">
@@ -589,7 +727,6 @@ export const CustomerPortal: React.FC<CustomerPortalProps> = ({ onBackToHome, on
                     </div>
                   </div>
 
-                  {/* Highlights Grid */}
                   <div className="relative z-10 grid grid-cols-2 sm:grid-cols-4 gap-4 pt-6">
                     <div className="p-3.5 rounded-xl bg-white/5 border border-white/10">
                       <span className="text-[10px] font-mono uppercase tracking-widest text-[#CCC5C4] block">Campaign Status</span>
@@ -620,12 +757,10 @@ export const CustomerPortal: React.FC<CustomerPortalProps> = ({ onBackToHome, on
                       </span>
                     </div>
                   </div>
-
                 </div>
 
-                {/* Progress Bar & Manager Support */}
+                {/* Progress Bar & Support */}
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                  
                   <div className="lg:col-span-8 bg-[#171919] border border-white/15 rounded-3xl p-6 sm:p-8 space-y-6">
                     <div className="flex items-center justify-between">
                       <div>
@@ -659,7 +794,7 @@ export const CustomerPortal: React.FC<CustomerPortalProps> = ({ onBackToHome, on
                       <Sparkles className="w-5 h-5 text-[#C8102E] shrink-0 mt-0.5" />
                       <div>
                         <span className="text-xs font-mono uppercase tracking-widest text-white font-bold block mb-1">
-                          Agency Lead Note for Your Campaign:
+                          Agency Lead Note:
                         </span>
                         <p className="text-xs text-[#CCC5C4] leading-relaxed">
                           "{currentUser.notes}"
@@ -668,7 +803,6 @@ export const CustomerPortal: React.FC<CustomerPortalProps> = ({ onBackToHome, on
                     </div>
                   </div>
 
-                  {/* Manager Card */}
                   <div className="lg:col-span-4 bg-[#171919] border border-white/15 rounded-3xl p-6 sm:p-8 flex flex-col justify-between space-y-6">
                     <div>
                       <span className="text-[10px] font-mono uppercase tracking-widest text-[#C8102E] font-bold block mb-2">
@@ -702,7 +836,6 @@ export const CustomerPortal: React.FC<CustomerPortalProps> = ({ onBackToHome, on
                       </a>
                     </div>
                   </div>
-
                 </div>
 
                 {/* Delivered Reels Batch */}
@@ -773,7 +906,7 @@ export const CustomerPortal: React.FC<CustomerPortalProps> = ({ onBackToHome, on
                   No Active Plan Assigned Yet
                 </h2>
                 <p className="text-sm font-sans text-[#CCC5C4] leading-relaxed max-w-lg mx-auto">
-                  नमस्ते <span className="text-white font-bold">{currentUser.name}</span>! आपने अभी-अभी नया खाता बनाया है। आपकी दुकान <span className="text-white font-bold">"{currentUser.businessName}"</span> के लिए कोई भी पैकेज शुरू करने के लिए नीचे दिए गए पैकेज टैब में जाएं या सीधे हमसे संपर्क करें।
+                  नमस्ते <span className="text-white font-bold">{currentUser.name}</span>! आपकी दुकान <span className="text-white font-bold">"{currentUser.businessName}"</span> के लिए कोई भी पैकेज शुरू करने के लिए नीचे दिए गए पैकेज टैब में जाएं या सीधे हमसे संपर्क करें।
                 </p>
                 <div className="pt-4 flex flex-wrap items-center justify-center gap-4">
                   <button
@@ -794,13 +927,10 @@ export const CustomerPortal: React.FC<CustomerPortalProps> = ({ onBackToHome, on
                 </div>
               </div>
             )}
-
           </div>
         )}
 
-        {/* ======================================================== */}
-        {/* TAB 2: PACKAGES & PRICING (EXCLUSIVE TO CLIENT PORTAL)   */}
-        {/* ======================================================== */}
+        {/* TAB 2: PACKAGES & PRICING */}
         {activeTab === 'pricing' && (
           <div className="space-y-8 animate-in fade-in duration-300">
             <div>
@@ -816,7 +946,6 @@ export const CustomerPortal: React.FC<CustomerPortalProps> = ({ onBackToHome, on
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              
               {/* Plan 1 */}
               <div className="p-8 rounded-3xl bg-[#171919] border border-white/15 flex flex-col justify-between">
                 <div>
@@ -909,14 +1038,11 @@ export const CustomerPortal: React.FC<CustomerPortalProps> = ({ onBackToHome, on
                   Activate Full Combo →
                 </a>
               </div>
-
             </div>
           </div>
         )}
 
-        {/* ======================================================== */}
-        {/* TAB 3: AGENCY BLUEPRINT & EXECUTION PROCESS              */}
-        {/* ======================================================== */}
+        {/* TAB 3: AGENCY BLUEPRINT */}
         {activeTab === 'overview' && (
           <div className="space-y-6 animate-in fade-in duration-300">
             <div>
@@ -964,9 +1090,7 @@ export const CustomerPortal: React.FC<CustomerPortalProps> = ({ onBackToHome, on
           </div>
         )}
 
-        {/* ======================================================== */}
-        {/* TAB 4: ACCOUNT DETAILS & PROFILE                         */}
-        {/* ======================================================== */}
+        {/* TAB 4: ACCOUNT DETAILS */}
         {activeTab === 'account' && (
           <div className="max-w-2xl bg-[#171919] border border-white/15 rounded-3xl p-8 space-y-6 animate-in fade-in duration-300">
             <div>
