@@ -56,7 +56,7 @@ export const App: React.FC = () => {
 
   return (
     <ErrorBoundary>
-      <div className="bg-[#0A0A0A] min-h-screen text-white">
+      <div className="bg-white min-h-screen text-[#191C21] w-full max-w-full overflow-x-hidden">
         
         {/* 1. Cinematic Light Beam -> Logo Absorption Intro Animation */}
         {showIntro && (
