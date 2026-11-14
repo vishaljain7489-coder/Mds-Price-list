@@ -58,7 +58,7 @@ export const FrontPortfolioPage: React.FC<FrontPortfolioPageProps> = ({
               <span className="text-lg leading-none font-black">+</span>
             </div>
             <span className="font-heading-modern text-xl sm:text-2xl font-black text-[#1A1D20] tracking-tight leading-none">
-              RONIN<span className="text-[#E84025]">MEDIA</span>
+              CLICK <span className="text-[#E84025]">&</span> CRAFT
             </span>
           </a>
 
@@ -600,7 +600,7 @@ export const FrontPortfolioPage: React.FC<FrontPortfolioPageProps> = ({
           
           <div className="col-span-2 space-y-2">
             <span className="font-heading-modern text-xl font-black text-[#1A1D20] block">
-              RONIN<span className="text-[#E84025]">MEDIA</span>
+              CLICK <span className="text-[#E84025]">&</span> CRAFT
             </span>
             <p className="text-xs text-gray-500 max-w-xs leading-relaxed">
               Performance video creatives and 5-10km hyper-local Meta advertising.
@@ -627,7 +627,7 @@ export const FrontPortfolioPage: React.FC<FrontPortfolioPageProps> = ({
         </div>
 
         <div className="max-w-7xl mx-auto pt-4 border-t border-orange-200/50 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
-          <span>© 2026 RONIN MEDIA. All rights reserved.</span>
+          <span>© 2026 Click and Craft. All rights reserved.</span>
           <button onClick={toggleLanguage} className="text-[#E84025] font-bold hover:underline">
             {lang === 'en' ? '🌐 Switch to हिन्दी' : '🌐 Switch to English'}
           </button>

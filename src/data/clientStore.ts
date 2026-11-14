@@ -145,7 +145,7 @@ export const INITIAL_CLIENTS: ClientAccount[] = [
   }
 ];
 
-const STORAGE_KEY = 'ronin_agency_clients_v3';
+const STORAGE_KEY = 'click_and_craft_clients_v4';
 
 export const getClients = (): ClientAccount[] => {
   try {

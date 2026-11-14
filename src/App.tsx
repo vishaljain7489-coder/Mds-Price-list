@@ -22,12 +22,12 @@ class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { has
   render() {
     if (this.state.hasError) {
       return (
-        <div className="min-h-screen bg-[#0A0A0A] text-white flex flex-col items-center justify-center p-6 text-center">
-          <div className="w-12 h-12 rounded-xl bg-[#C8102E] text-white flex items-center justify-center font-bold text-xl mb-4">
-            !
+        <div className="min-h-screen bg-[#FFF6F2] text-[#191C21] flex flex-col items-center justify-center p-6 text-center">
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-[#E84025] to-[#FF5B26] text-white flex items-center justify-center font-bold text-xl mb-4 shadow-md">
+            +
           </div>
-          <h2 className="font-display text-3xl uppercase mb-2">Restoring Website Workspace...</h2>
-          <p className="text-xs font-mono text-[#CCC5C4] mb-6">
+          <h2 className="font-heading-modern text-2xl font-black uppercase mb-2">Restoring Click & Craft Workspace...</h2>
+          <p className="text-xs text-gray-500 mb-6">
             Refreshing stored data to default clean state.
           </p>
           <button
@@ -35,7 +35,7 @@ class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { has
               localStorage.clear();
               window.location.reload();
             }}
-            className="px-6 py-2.5 rounded-full bg-[#C8102E] text-white text-xs font-mono uppercase font-bold cursor-pointer"
+            className="px-6 py-2.5 rounded-full bg-[#E84025] text-white text-xs font-bold uppercase tracking-wider cursor-pointer shadow-md hover:bg-[#d3361d]"
           >
             Clear Cache & Reload →
           </button>

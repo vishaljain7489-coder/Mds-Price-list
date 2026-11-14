@@ -42,7 +42,7 @@ export interface AgencyProfile {
 }
 
 export const INITIAL_AGENCY_PROFILE: AgencyProfile = {
-  brandName: "RONIN MEDIA",
+  brandName: "Click and Craft",
   tagline: "Performance Video Creatives & Hyper-Local Meta Ad Engineering",
   badge: "2 PARTNERS · 2-3 YEARS BATTLE-TESTED PERFORMANCE MARKETING",
   experienceYears: "2-3 Years",
@@ -143,7 +143,7 @@ export const INITIAL_AGENCY_PROFILE: AgencyProfile = {
   ]
 };
 
-const PROFILE_STORAGE_KEY = 'ronin_agency_profile_v2';
+const PROFILE_STORAGE_KEY = 'click_and_craft_agency_profile_v3';
 
 export const getAgencyProfile = (): AgencyProfile => {
   try {

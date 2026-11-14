@@ -5,18 +5,18 @@
 // =========================================================================
 
 export const BRAND = {
-  name: "RONIN MEDIA", // Placeholder: Change brand name here in one place
-  tagline: "Unbeatable Anime-Creator Media Advertising & Paid Growth Panel",
-  heroSubtitle: "We run high-retention paid ad campaigns, viral reel shoots, and top professional page collaborations.",
+  name: "Click and Craft", // Master brand name
+  tagline: "Performance Video Creatives & Hyper-Local Meta Ad Engineering",
+  heroSubtitle: "We engineer scroll-stopping 9:16 vertical reels and laser-targeted Meta ad sets for cafés and clothing stores.",
   badgeText: "NOW BOOKING 2026 SLOTS",
   yearTag: "[2026]",
-  whatsappNumber: "+919876543210",
-  whatsappDisplay: "+91 98765 43210",
-  email: "partner@roninmedia.agency",
-  address: "Cyber Hub, DLF Phase 2, Gurugram • Mumbai • Bengaluru",
-  instagram: "https://instagram.com/roninmedia",
-  youtube: "https://youtube.com/@roninmedia",
-  twitter: "https://x.com/roninmedia"
+  whatsappNumber: "+917489640013",
+  whatsappDisplay: "+91 74896 40013",
+  email: "partner@clickandcraft.agency",
+  address: "Jaipur, Rajasthan • Delhi NCR • Mumbai",
+  instagram: "https://instagram.com/clickandcraft",
+  youtube: "https://youtube.com/@clickandcraft",
+  twitter: "https://x.com/clickandcraft"
 };
 
 // 0. PRELOADER INTRO
