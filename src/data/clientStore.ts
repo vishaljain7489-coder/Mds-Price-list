@@ -1,7 +1,7 @@
 import { AgencyClient } from '../types';
 
 export interface ClientAccount extends AgencyClient {
-  passwordHash: string; // Plain password for demo portal
+  passwordHash: string;
   assignedManager: {
     name: string;
     phone: string;
@@ -46,7 +46,7 @@ export const INITIAL_CLIENTS: ClientAccount[] = [
     createdDate: "02 Nov 2026",
     passwordHash: "client123",
     assignedManager: {
-      name: "Aryan Verma (Lead Creative)",
+      name: "Aryan Verma (Creative Director)",
       phone: "+91 98765 43210",
       whatsapp: "919876543210"
     },
@@ -140,49 +140,6 @@ export const INITIAL_CLIENTS: ClientAccount[] = [
         videoThumbnail: "https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&w=600&q=80"
       }
     ]
-  },
-  {
-    id: "CLI-103",
-    name: "Pooja Malhotra",
-    businessName: "Aura Aesthetics Luxury Salon",
-    category: "Beauty & Wellness",
-    phone: "+91 99887 76655",
-    email: "pooja@aurasalon.in",
-    city: "Mumbai, Bandra West",
-    packageSubscribed: "Starter Meta Local Inquiries Package (₹3,000)",
-    totalBilled: 3000,
-    amountPaid: 3000,
-    amountDue: 0,
-    paymentStatus: 'Paid',
-    paymentMode: 'UPI',
-    isVip: false,
-    clientTemperament: "Happy with rapid WhatsApp appointment inquiries.",
-    reelsDelivered: 5,
-    reelsTotal: 5,
-    adsActive: 3,
-    adsPending: 0,
-    metaBudgetSpent: 1500,
-    metaBudgetTotal: 1500,
-    serviceStatus: 'Delivered',
-    notes: "Keratin treatment offer fully claimed. Ready for renewal.",
-    createdDate: "15 Oct 2026",
-    passwordHash: "client123",
-    assignedManager: {
-      name: "Sneha Kapoor (Account Specialist)",
-      phone: "+91 99887 76655",
-      whatsapp: "919988776655"
-    },
-    deliveredReelsList: [
-      {
-        id: "r201",
-        title: "Keratin Treatment Transformation Reveal",
-        deliveredDate: "18 Oct 2026",
-        views: "340K",
-        leads: "81 Appointments",
-        status: "Live & Scaling",
-        videoThumbnail: "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=600&q=80"
-      }
-    ]
   }
 ];
 
@@ -219,4 +176,55 @@ export const authenticateClient = (emailOrId: string, password: string): ClientA
   );
 
   return found || null;
+};
+
+export const registerClient = (data: {
+  name: string;
+  businessName: string;
+  email: string;
+  phone: string;
+  city: string;
+  category: string;
+  password: string;
+}): ClientAccount => {
+  const clients = getClients();
+  const newId = `CLI-${100 + clients.length + 1}`;
+
+  const newAccount: ClientAccount = {
+    id: newId,
+    name: data.name,
+    businessName: data.businessName,
+    category: data.category || "Retail & Business",
+    phone: data.phone,
+    email: data.email,
+    city: data.city || "India",
+    packageSubscribed: "No Plan Activated Yet",
+    totalBilled: 0,
+    amountPaid: 0,
+    amountDue: 0,
+    paymentStatus: 'Due',
+    paymentMode: 'UPI',
+    isVip: false,
+    clientTemperament: "New registered client.",
+    reelsDelivered: 0,
+    reelsTotal: 0,
+    adsActive: 0,
+    adsPending: 0,
+    metaBudgetSpent: 0,
+    metaBudgetTotal: 0,
+    serviceStatus: 'Pending Renewal',
+    notes: "Account created via portal registration. Ready to choose package.",
+    createdDate: "Today",
+    passwordHash: data.password,
+    assignedManager: {
+      name: "Aryan Verma (Lead Creative)",
+      phone: "+91 98765 43210",
+      whatsapp: "919876543210"
+    },
+    deliveredReelsList: []
+  };
+
+  clients.push(newAccount);
+  saveClients(clients);
+  return newAccount;
 };
