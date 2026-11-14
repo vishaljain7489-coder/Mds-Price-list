@@ -44,8 +44,8 @@ export interface AgencyProfile {
 export const INITIAL_AGENCY_PROFILE: AgencyProfile = {
   brandName: "RONIN MEDIA",
   tagline: "Performance Video Creatives & Hyper-Local Meta Ad Engineering",
-  badge: "2 PARTNERS · 2+ YEARS BATTLE-TESTED PERFORMANCE MARKETING",
-  experienceYears: "2+ Years",
+  badge: "2 PARTNERS · 2-3 YEARS BATTLE-TESTED PERFORMANCE MARKETING",
+  experienceYears: "2-3 Years",
   founders: {
     title: "Founded by 2 Media Partners with 2-3 Years of Hardcore Ad Operations",
     description: "We are two creative & media buying partners who have spent the last 2-3 years deep in the trenches of Meta Ads Manager, creative hook scripting, and local offline business lead generation.",
@@ -55,7 +55,7 @@ export const INITIAL_AGENCY_PROFILE: AgencyProfile = {
   motive: {
     heading: "WHY WE DO THIS & OUR CORE MOTIVE",
     subheading: "Stopping the mindless blue 'Boost Post' trap that burns money for local businesses.",
-    story: "Over the past 2 years, we saw local shop owners, restaurants, car showrooms, and salons waste thousands of rupees hitting the blue 'Boost' button on Instagram. The result? Fake likes, bot comments, and zero real walk-in customers or WhatsApp calls.",
+    story: "Over the past 2-3 years, we saw local shop owners, restaurants, car showrooms, and salons waste thousands of rupees hitting the blue 'Boost' button on Instagram. The result? Fake likes, bot comments, and zero real walk-in customers or WhatsApp calls.",
     whyBoostFails: "Instagram Boost only targets idle scrollers who double-tap without ever buying anything.",
     ourSolution: "Our motive is singular: We pair cinematic 9:16 vertical editing (high-retention hooks in the first 3 seconds) with enterprise Meta Ads Manager 5-10km trade-area geofencing. We optimize machine learning solely for direct WhatsApp chats and store footfall."
   },
@@ -143,24 +143,34 @@ export const INITIAL_AGENCY_PROFILE: AgencyProfile = {
   ]
 };
 
-const PROFILE_STORAGE_KEY = 'ronin_agency_profile_v1';
+const PROFILE_STORAGE_KEY = 'ronin_agency_profile_v2';
 
 export const getAgencyProfile = (): AgencyProfile => {
   try {
-    const raw = localStorage.getItem(PROFILE_STORAGE_KEY);
+    const raw = typeof window !== 'undefined' ? localStorage.getItem(PROFILE_STORAGE_KEY) : null;
     if (!raw) {
-      localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(INITIAL_AGENCY_PROFILE));
       return INITIAL_AGENCY_PROFILE;
     }
-    return JSON.parse(raw);
-  } catch {
+    const parsed = JSON.parse(raw);
+    return {
+      ...INITIAL_AGENCY_PROFILE,
+      ...parsed,
+      stats: (Array.isArray(parsed.stats) && parsed.stats.length > 0) ? parsed.stats : INITIAL_AGENCY_PROFILE.stats,
+      founders: parsed.founders || INITIAL_AGENCY_PROFILE.founders,
+      motive: parsed.motive || INITIAL_AGENCY_PROFILE.motive,
+      enhancements: (Array.isArray(parsed.enhancements) && parsed.enhancements.length > 0) ? parsed.enhancements : INITIAL_AGENCY_PROFILE.enhancements,
+      portfolioCases: (Array.isArray(parsed.portfolioCases) && parsed.portfolioCases.length > 0) ? parsed.portfolioCases : INITIAL_AGENCY_PROFILE.portfolioCases,
+    };
+  } catch (e) {
     return INITIAL_AGENCY_PROFILE;
   }
 };
 
 export const saveAgencyProfile = (profile: AgencyProfile) => {
   try {
-    localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(profile));
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(profile));
+    }
   } catch (e) {
     console.error("Failed to save agency profile", e);
   }
