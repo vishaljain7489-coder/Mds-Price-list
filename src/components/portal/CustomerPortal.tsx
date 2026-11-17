@@ -4,12 +4,13 @@ import {
   Clock, Video, TrendingUp, DollarSign, MessageCircle, 
   Phone, LogOut, ArrowRight, Sparkles, User, AlertCircle,
   Package, Layers, FileText, Info, HelpCircle, Check, Play,
-  BarChart3, Store, ArrowLeft, ExternalLink
+  BarChart3, Store, ArrowLeft, ExternalLink, Headphones, QrCode
 } from 'lucide-react';
 import { 
   ClientAccount, authenticateClient, registerClient, getClients, 
   isAdminUser, ADMIN_CREDENTIALS 
 } from '../../data/clientStore';
+import { YoupiCheckoutModal } from '../modals/YoupiCheckoutModal';
 
 interface CustomerPortalProps {
   onBackToHome?: () => void;
@@ -41,8 +42,8 @@ export const CustomerPortal: React.FC<CustomerPortalProps> = ({ onBackToHome, on
   const [successMsg, setSuccessMsg] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // Active Tab inside Dashboard: 'plan' | 'pricing' | 'overview' | 'account'
-  const [activeTab, setActiveTab] = useState<'plan' | 'pricing' | 'overview' | 'account'>('plan');
+  // Checkout modal state for buying/upgrading plans
+  const [selectedPlanForPayment, setSelectedPlanForPayment] = useState<{ name: string; amount: number } | null>(null);
 
   // Handle Login
   const handleLogin = (e: React.FormEvent) => {
@@ -195,9 +196,22 @@ export const CustomerPortal: React.FC<CustomerPortalProps> = ({ onBackToHome, on
     setSuccessMsg('');
   };
 
+  const handlePaymentSuccess = (utrNumber: string, planName: string, amount: number) => {
+    if (currentUser) {
+      setCurrentUser({
+        ...currentUser,
+        packageSubscribed: `${planName} (₹${amount})`,
+        paymentStatus: 'Paid',
+        totalBilled: amount,
+        amountPaid: amount,
+        amountDue: 0,
+        notes: `Payment submitted via YouPI-PG. UTR Ref: ${utrNumber}. Active and optimizing.`
+      });
+    }
+  };
+
   // ========================================================
   // VIEW 1: AUTHENTICATION (LOGIN & SIGN UP)
-  // Orange-White / Cream BrandBuzz Aesthetic
   // ========================================================
   if (!currentUser) {
     return (
@@ -220,7 +234,7 @@ export const CustomerPortal: React.FC<CustomerPortalProps> = ({ onBackToHome, on
           {onBackToHome && (
             <button
               onClick={onBackToHome}
-              className="text-xs font-semibold text-gray-600 hover:text-[#E84025] flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-orange-100 shadow-sm transition-all cursor-pointer"
+              className="text-xs font-semibold text-gray-600 hover:text-[#E84025] flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white border border-orange-100 shadow-sm transition-all cursor-pointer"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
               <span>Back to Website</span>
@@ -282,7 +296,7 @@ export const CustomerPortal: React.FC<CustomerPortalProps> = ({ onBackToHome, on
                     Welcome to Client Portal
                   </h2>
                   <p className="text-xs text-gray-500 mt-1">
-                    Enter your email & password to access deliverables and active plans
+                    Enter your email & password to access deliverables, plans & helpline
                   </p>
                 </div>
 
@@ -517,15 +531,43 @@ export const CustomerPortal: React.FC<CustomerPortalProps> = ({ onBackToHome, on
 
   // ========================================================
   // VIEW 2: LOGGED-IN WORKSPACE & EXTRA ADMIN BUTTON
-  // Orange-White / Cream Aesthetic
   // ========================================================
   const hasActivePlan = currentUser.totalBilled > 0 && currentUser.reelsTotal > 0;
   const progressPercent = hasActivePlan 
     ? Math.round((currentUser.reelsDelivered / currentUser.reelsTotal) * 100) 
     : 0;
 
+  // Home Page Packages that customer can see and purchase
+  const availablePackages = [
+    {
+      id: "pkg-starter",
+      name: "5 Reels Ad Campaign",
+      price: 3000,
+      reels: "5 Viral Reels",
+      radius: "5km Hyper-Local Meta Ads",
+      highlights: ["5 Viral 9:16 Video Reels", "5km Trade Area Ads Setup", "Direct WhatsApp Lead Tracking", "Dedicated Progress Tracker"]
+    },
+    {
+      id: "pkg-growth",
+      name: "15 Reels Signature Growth",
+      price: 6000,
+      reels: "15 Viral Reels",
+      radius: "5-10km Hyper-Local Meta Ads",
+      isPopular: true,
+      highlights: ["15 Cinematic 3-Sec Hook Reels", "5-10km Hyper-Local Meta Ads Manager", "Direct WhatsApp Customer Footfall", "Weekly Video Telemetry & Progress", "Transparent Ad Spend Billing"]
+    },
+    {
+      id: "pkg-combo",
+      name: "15 Reels + 15 Posts Combo",
+      price: 12000,
+      reels: "15 Reels + 15 Posts",
+      radius: "Complete Trade Area Domination",
+      highlights: ["15 4K Viral Video Reels", "15 Creative Posts & Offer Banners", "High-Spender Custom Retargeting", "Meta Pixel & CAPI Setup", "Dedicated Creative Director"]
+    }
+  ];
+
   return (
-    <div className="min-h-screen bg-[#FFF6F2] text-[#191C21] font-sans antialiased selection:bg-[#E84025] selection:text-white pb-20">
+    <div className="min-h-screen bg-[#FFF6F2] text-[#191C21] font-sans antialiased selection:bg-[#E84025] selection:text-white pb-24">
       
       {/* Background Soft Glow */}
       <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[700px] h-[700px] rounded-full bg-orange-200/30 blur-[150px] pointer-events-none" />
@@ -621,7 +663,51 @@ export const CustomerPortal: React.FC<CustomerPortalProps> = ({ onBackToHome, on
           </div>
         )}
 
-        {/* Client Top Profile Overview */}
+        {/* SECTION 1: CUSTOMER HELPLINE (कस्टमर हेल्पलाइन) */}
+        <div className="bg-gradient-to-r from-orange-500 to-[#E84025] text-white rounded-3xl p-5 sm:p-6 shadow-[0_12px_35px_rgba(232,64,37,0.25)] flex flex-col md:flex-row items-start md:items-center justify-between gap-5">
+          <div className="space-y-1.5">
+            <div className="flex items-center gap-2">
+              <span className="px-2.5 py-0.5 rounded-full bg-white/20 text-white text-[10px] font-extrabold uppercase tracking-widest backdrop-blur-md">
+                Dedicated 24/7 Support
+              </span>
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+              <span className="text-xs font-bold text-emerald-200">Helpline Active</span>
+            </div>
+            <h2 className="font-heading-modern text-2xl sm:text-3xl font-black">
+              Click & Craft Customer Helpline
+            </h2>
+            <p className="text-xs sm:text-sm text-white/90 max-w-xl leading-relaxed">
+              अपने एक्टिव प्लान, रील्स स्क्रिप्टिंग, मेटा ऐड्स बजट, या पेमेंट्स से जुड़े किसी भी सवाल के लिए सीधे हमारे हेल्पलाइन नंबर या व्हाट्सएप पर संपर्क करें।
+            </p>
+            <div className="text-[11px] text-white/80 font-medium pt-1">
+              🕒 हेल्पलाइन समय: <strong>सुबह 10:00 बजे से रात 9:00 बजे तक (Mon - Sun)</strong>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-3 shrink-0">
+            {/* WhatsApp Helpline */}
+            <a
+              href={`https://wa.me/917489640013?text=Hello%20Click%20and%20Craft%20Team,%20I%20am%20${encodeURIComponent(currentUser.name)}%20(${encodeURIComponent(currentUser.businessName)}).%20I%20need%20help%20with%20my%20campaign.`}
+              target="_blank"
+              rel="noreferrer"
+              className="flex items-center gap-2 px-5 py-3 rounded-full bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold uppercase tracking-wider shadow-md hover:scale-105 transition-all cursor-pointer"
+            >
+              <MessageCircle className="w-4 h-4" />
+              <span>WhatsApp Helpline</span>
+            </a>
+
+            {/* Direct Phone Call */}
+            <a
+              href="tel:+917489640013"
+              className="flex items-center gap-2 px-5 py-3 rounded-full bg-white text-[#E84025] hover:bg-orange-50 text-xs font-bold uppercase tracking-wider shadow-md hover:scale-105 transition-all cursor-pointer"
+            >
+              <Phone className="w-4 h-4" />
+              <span>Call +91 74896 40013</span>
+            </a>
+          </div>
+        </div>
+
+        {/* SECTION 2: CLIENT TOP PROFILE OVERVIEW */}
         <div className="bg-white rounded-3xl p-5 sm:p-6 border border-orange-100 shadow-[0_10px_35px_rgba(232,64,37,0.06)] flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
@@ -640,14 +726,14 @@ export const CustomerPortal: React.FC<CustomerPortalProps> = ({ onBackToHome, on
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="px-4 py-2 rounded-2xl bg-orange-50 border border-orange-200 text-right">
+            <div className="px-4 py-2.5 rounded-2xl bg-orange-50 border border-orange-200 text-right">
               <span className="text-[10px] font-bold text-gray-500 uppercase block">Active Package</span>
-              <span className="text-xs font-bold text-[#E84025]">{currentUser.packageSubscribed}</span>
+              <span className="text-xs sm:text-sm font-bold text-[#E84025]">{currentUser.packageSubscribed}</span>
             </div>
           </div>
         </div>
 
-        {/* 4 Metric Cards */}
+        {/* SECTION 3: 4 METRIC CARDS */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           
           {/* Card 1: Reels Progress */}
@@ -698,7 +784,7 @@ export const CustomerPortal: React.FC<CustomerPortalProps> = ({ onBackToHome, on
             </div>
           </div>
 
-          {/* Card 3: Billing & Invoices */}
+          {/* Card 3: Billing Status */}
           <div className="bg-white rounded-2xl p-4 sm:p-5 border border-orange-100 shadow-sm flex flex-col justify-between">
             <div className="flex items-center justify-between mb-3">
               <span className="text-xs font-bold text-gray-500 uppercase">Billing Status</span>
@@ -735,7 +821,7 @@ export const CustomerPortal: React.FC<CustomerPortalProps> = ({ onBackToHome, on
                 href={`https://wa.me/${currentUser.assignedManager.whatsapp}?text=Hello%20${currentUser.assignedManager.name},%20I%20am%20checking%20my%20campaign%20deliverables.`}
                 target="_blank"
                 rel="noreferrer"
-                className="mt-2.5 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-[11px] font-bold transition-all"
+                className="mt-2.5 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-[11px] font-bold transition-all cursor-pointer"
               >
                 <MessageCircle className="w-3.5 h-3.5" />
                 <span>Chat on WhatsApp</span>
@@ -745,7 +831,104 @@ export const CustomerPortal: React.FC<CustomerPortalProps> = ({ onBackToHome, on
 
         </div>
 
-        {/* Delivered Reels Gallery */}
+        {/* SECTION 4: HOME PAGE PLANS & PACKAGES INSIDE PORTAL (कस्टमर को प्लान्स दिखेंगे) */}
+        <div className="bg-white rounded-3xl p-5 sm:p-6 border border-orange-100 shadow-[0_10px_35px_rgba(232,64,37,0.06)] space-y-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 pb-3 border-b border-orange-100">
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="px-2.5 py-0.5 rounded-full bg-orange-100 text-[#E84025] text-[10px] font-extrabold uppercase tracking-wider">
+                  Official Agency Price Lists
+                </span>
+                <span className="text-xs text-gray-400">· 0% Fee YouPI-PG Gateway</span>
+              </div>
+              <h3 className="font-heading-modern text-xl sm:text-2xl font-black text-[#191C21] mt-1">
+                Choose or Upgrade Your Growth Package
+              </h3>
+              <p className="text-xs text-gray-500">
+                You can upgrade or renew your ad campaigns directly using UPI (GPay, PhonePe, Paytm, QR Code)
+              </p>
+            </div>
+          </div>
+
+          {/* 3 Packages Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 pt-2">
+            {availablePackages.map((pkg) => {
+              const isCurrent = currentUser.packageSubscribed.includes(pkg.price.toString());
+
+              return (
+                <div
+                  key={pkg.id}
+                  className={`p-5 rounded-3xl border transition-all flex flex-col justify-between relative ${
+                    isCurrent
+                      ? 'bg-orange-50/50 border-2 border-[#E84025] shadow-md'
+                      : 'bg-white border-gray-100 hover:border-orange-200 shadow-sm hover:shadow-md'
+                  }`}
+                >
+                  {isCurrent && (
+                    <span className="absolute -top-3 right-4 px-3 py-0.5 rounded-full bg-[#E84025] text-white text-[10px] font-bold uppercase tracking-wider shadow-sm">
+                      ✓ Active Plan
+                    </span>
+                  )}
+                  {!isCurrent && pkg.isPopular && (
+                    <span className="absolute -top-3 right-4 px-3 py-0.5 rounded-full bg-amber-500 text-white text-[10px] font-bold uppercase tracking-wider shadow-sm">
+                      ⭐ Most Popular
+                    </span>
+                  )}
+
+                  <div className="space-y-3">
+                    <div>
+                      <span className="text-[10px] font-bold uppercase text-gray-400 tracking-wider block">
+                        {pkg.reels}
+                      </span>
+                      <h4 className="font-heading-modern text-lg font-black text-[#191C21]">
+                        {pkg.name}
+                      </h4>
+                      <p className="text-[11px] text-gray-500 mt-0.5">{pkg.radius}</p>
+                    </div>
+
+                    <div className="pt-1">
+                      <span className="font-heading-modern text-3xl font-black text-[#E84025]">
+                        ₹{pkg.price.toLocaleString('en-IN')}
+                      </span>
+                      <span className="text-xs text-gray-400 font-medium"> / campaign</span>
+                    </div>
+
+                    <ul className="space-y-2 pt-3 border-t border-gray-100 text-xs text-gray-600">
+                      {pkg.highlights.map((h, i) => (
+                        <li key={i} className="flex items-center gap-2">
+                          <Check className="w-3.5 h-3.5 text-[#E84025] shrink-0" />
+                          <span>{h}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div className="pt-5">
+                    {isCurrent ? (
+                      <button
+                        onClick={() => setSelectedPlanForPayment({ name: pkg.name, amount: pkg.price })}
+                        className="w-full py-2.5 rounded-full bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold uppercase tracking-wider shadow-sm transition-all cursor-pointer flex items-center justify-center gap-1.5"
+                      >
+                        <QrCode className="w-3.5 h-3.5" />
+                        <span>Renew Plan via UPI →</span>
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => setSelectedPlanForPayment({ name: pkg.name, amount: pkg.price })}
+                        className="w-full py-2.5 rounded-full bg-[#E84025] hover:bg-[#d3361d] text-white text-xs font-bold uppercase tracking-wider shadow-sm transition-all cursor-pointer flex items-center justify-center gap-1.5"
+                      >
+                        <QrCode className="w-3.5 h-3.5" />
+                        <span>Pay via YouPI-PG (₹{pkg.price}) →</span>
+                      </button>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* SECTION 5: DELIVERED REELS GALLERY */}
         <div className="bg-white rounded-3xl p-5 sm:p-6 border border-orange-100 shadow-sm space-y-4">
           <div className="flex items-center justify-between">
             <div>
@@ -786,7 +969,7 @@ export const CustomerPortal: React.FC<CustomerPortalProps> = ({ onBackToHome, on
           </div>
         </div>
 
-        {/* Campaign Notes */}
+        {/* SECTION 6: CAMPAIGN NOTES */}
         <div className="bg-orange-50/70 rounded-2xl p-4 sm:p-5 border border-orange-200/80 flex items-start gap-3">
           <Info className="w-5 h-5 text-[#E84025] shrink-0 mt-0.5" />
           <div className="text-xs text-gray-700">
@@ -796,6 +979,17 @@ export const CustomerPortal: React.FC<CustomerPortalProps> = ({ onBackToHome, on
         </div>
 
       </main>
+
+      {/* YouPI-PG Dynamic UPI Payment Checkout Modal */}
+      {selectedPlanForPayment && (
+        <YoupiCheckoutModal
+          isOpen={Boolean(selectedPlanForPayment)}
+          onClose={() => setSelectedPlanForPayment(null)}
+          planName={selectedPlanForPayment.name}
+          amount={selectedPlanForPayment.amount}
+          onPaymentSuccess={handlePaymentSuccess}
+        />
+      )}
 
     </div>
   );

@@ -8,6 +8,7 @@ import {
 import { TRANSLATIONS, Language } from '../../data/translations';
 import { AnimatedCounter } from '../common/AnimatedCounter';
 import { ReelModal } from '../common/ReelModal';
+import { YoupiCheckoutModal } from '../modals/YoupiCheckoutModal';
 
 interface FrontPortfolioPageProps {
   onOpenPortal: () => void;
@@ -26,6 +27,9 @@ export const FrontPortfolioPage: React.FC<FrontPortfolioPageProps> = ({
 
   // Selected reel for video modal preview
   const [selectedCase, setSelectedCase] = useState<any | null>(null);
+
+  // YouPI-PG Checkout Modal state
+  const [selectedCheckoutPlan, setSelectedCheckoutPlan] = useState<{ name: string; amount: number } | null>(null);
 
   const toggleLanguage = () => {
     setLang(prev => (prev === 'hi' ? 'en' : 'hi'));
@@ -634,7 +638,7 @@ export const FrontPortfolioPage: React.FC<FrontPortfolioPageProps> = ({
             </div>
 
             <button
-              onClick={onOpenPortal}
+              onClick={() => setSelectedCheckoutPlan({ name: '5 Reels Ad Campaign', amount: 3000 })}
               className="mt-6 w-full py-3 rounded-full bg-gray-100 hover:bg-orange-50 text-gray-800 hover:text-[#E84025] text-xs font-bold uppercase tracking-wider transition-all cursor-pointer border border-gray-200"
             >
               Select Starter Plan →
@@ -690,7 +694,7 @@ export const FrontPortfolioPage: React.FC<FrontPortfolioPageProps> = ({
             </div>
 
             <button
-              onClick={onOpenPortal}
+              onClick={() => setSelectedCheckoutPlan({ name: '15 Reels Signature Growth', amount: 6000 })}
               className="mt-6 w-full py-3.5 rounded-full bg-gradient-to-r from-[#E84025] to-[#FF5B26] hover:from-[#d3361d] hover:to-[#eb4c1a] text-white text-xs font-bold uppercase tracking-wider shadow-[0_6px_20px_rgba(232,64,37,0.3)] transition-all cursor-pointer hover:scale-105"
             >
               Choose 15 Reels Plan →
@@ -742,7 +746,7 @@ export const FrontPortfolioPage: React.FC<FrontPortfolioPageProps> = ({
             </div>
 
             <button
-              onClick={onOpenPortal}
+              onClick={() => setSelectedCheckoutPlan({ name: '15 Reels + 15 Posts Combo', amount: 12000 })}
               className="mt-6 w-full py-3 rounded-full bg-gray-100 hover:bg-orange-50 text-gray-800 hover:text-[#E84025] text-xs font-bold uppercase tracking-wider transition-all cursor-pointer border border-gray-200"
             >
               Select Combo Plan →
@@ -824,6 +828,20 @@ export const FrontPortfolioPage: React.FC<FrontPortfolioPageProps> = ({
         onClose={() => setSelectedCase(null)}
         caseItem={selectedCase}
       />
+
+      {/* YouPI-PG Dynamic UPI Payment Checkout Modal */}
+      {selectedCheckoutPlan && (
+        <YoupiCheckoutModal
+          isOpen={Boolean(selectedCheckoutPlan)}
+          onClose={() => setSelectedCheckoutPlan(null)}
+          planName={selectedCheckoutPlan.name}
+          amount={selectedCheckoutPlan.amount}
+          onPaymentSuccess={() => {
+            setSelectedCheckoutPlan(null);
+            onOpenPortal();
+          }}
+        />
+      )}
 
     </div>
   );

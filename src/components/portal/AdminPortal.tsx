@@ -273,6 +273,11 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onBackToHome }) => {
                     <td className="py-3.5 px-3">
                       <span className="text-[#E84025] font-bold block">{c.packageSubscribed}</span>
                       <span className="text-[10px] text-gray-400">Billed: ₹{c.totalBilled}</span>
+                      {c.notes && (
+                        <span className="text-[10px] text-emerald-600 font-medium block truncate max-w-[180px]" title={c.notes}>
+                          ℹ️ {c.notes}
+                        </span>
+                      )}
                     </td>
                     <td className="py-3.5 px-3">
                       <div className="flex items-center gap-2">
