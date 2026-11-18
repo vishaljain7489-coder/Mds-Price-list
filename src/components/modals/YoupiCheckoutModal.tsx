@@ -4,6 +4,7 @@ import {
   Smartphone, QrCode, Clock, ArrowRight, ExternalLink,
   AlertCircle
 } from 'lucide-react';
+import { recordNewTransaction, getYoupiSettings } from '../../data/youpiStore';
 
 interface YoupiCheckoutModalProps {
   isOpen: boolean;
@@ -21,9 +22,13 @@ export const YoupiCheckoutModal: React.FC<YoupiCheckoutModalProps> = ({
   planName,
   amount,
   onPaymentSuccess,
-  upiId = "7489640013@okaxis",
-  merchantName = "Click and Craft Agency"
+  upiId,
+  merchantName
 }) => {
+  const settings = getYoupiSettings();
+  const effectiveUpiId = upiId || settings.upiId;
+  const effectiveMerchantName = merchantName || settings.merchantName;
+
   const [utr, setUtr] = useState('');
   const [copied, setCopied] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -54,13 +59,13 @@ export const YoupiCheckoutModal: React.FC<YoupiCheckoutModalProps> = ({
   const formattedTime = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
 
   const transactionNote = `Plan_${planName.replace(/\s+/g, '_')}`;
-  const upiIntentUrl = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(merchantName)}&am=${amount}&cu=INR&tn=${encodeURIComponent(transactionNote)}`;
+  const upiIntentUrl = `upi://pay?pa=${encodeURIComponent(effectiveUpiId)}&pn=${encodeURIComponent(effectiveMerchantName)}&am=${amount}&cu=INR&tn=${encodeURIComponent(transactionNote)}`;
   
   // Real dynamic QR Code generated on the fly via high-speed CDN
   const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=10&data=${encodeURIComponent(upiIntentUrl)}`;
 
   const handleCopyUpi = () => {
-    navigator.clipboard.writeText(upiId);
+    navigator.clipboard.writeText(effectiveUpiId);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -73,6 +78,14 @@ export const YoupiCheckoutModal: React.FC<YoupiCheckoutModalProps> = ({
       setError('कृपया सही 12-अंकों का UPI UTR / Transaction Ref ID दर्ज करें।');
       return;
     }
+
+    // Automatically record in YouPI-PG Transactions ledger
+    recordNewTransaction({
+      planName,
+      amount,
+      utr: cleanUtr,
+      method: activeTab === 'qr' ? 'UPI_QR' : 'PHONEPE'
+    });
 
     setError('');
     setSubmitted(true);
